@@ -1,0 +1,28 @@
+#appointment-button-wrapper{
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 900;
+}
+#appointment-button-wrapper.pulse:before{
+    content: '';
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: #1976d2;
+    animation: appointmentPulse 1.5s linear infinite;
+    border-radius: 6px;
+    z-index: 0;
+}
+
+@keyframes appointmentPulse {
+    from{
+        transform: scale3d(1,1,1);
+        opacity: .7;
+    }
+    to{
+        transform: scale3d(1.2,1.5,1.2);
+        opacity: 0;
+    }
+}

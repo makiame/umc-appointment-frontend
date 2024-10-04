@@ -1,0 +1,63 @@
+#appointment-widget-root *{
+
+}
+
+#service-select-search-checkboxes-tags{
+    border:0!important;
+}
+
+#appointment-dateTime{
+    border:0!important;
+}
+
+
+#calendarInputSize > div{
+    min-height: 56px!important;
+    width: 100%!important;
+}
+
+#mui-4 {
+    border: 0!important;
+}
+
+#mui-8 {
+    border: 0!important;
+}
+
+#mui-7 {
+    border: 0!important;
+}
+
+#mui-6 {
+    border: 0!important;
+}
+
+#mui-9 {
+    border: 0!important;
+}
+
+#mui-5 {
+    border: 0!important;
+}
+
+.checkboxes-tags-search-list::-webkit-scrollbar,
+#appointment-widget-root *::-webkit-scrollbar,
+.MuiModal-root *::-webkit-scrollbar{
+    width: 2px;
+    height: 0;
+    background: transparent;
+    border-radius: 10px;
+}
+
+.checkboxes-tags-search-list::-webkit-scrollbar-thumb,
+#appointment-widget-root *::-webkit-scrollbar-thumb,
+.MuiModal-root *::-webkit-scrollbar-thumb{
+    width: 2px;
+    background: #1976d2;
+    border-radius: 10px;
+}
+
+[aria-labelledby="appointment-form"],
+[aria-labelledby="appointment-calendar"]{
+    user-select: none;
+}

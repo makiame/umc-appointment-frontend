@@ -1,0 +1,9 @@
+.checkboxes-tags-search{
+    max-width: 100%!important;
+    max-height: 100%!important;
+}
+
+.checkboxes-tags-search .MuiAutocomplete-tag.MuiAutocomplete-tagSizeSmall,
+.checkboxes-tags-search .MuiAutocomplete-tag.MuiAutocomplete-tagSizeMedium{
+    max-width: calc(100% / 3.5);
+}

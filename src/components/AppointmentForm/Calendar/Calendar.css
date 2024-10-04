@@ -1,0 +1,65 @@
+.appointment-calendar-grid-column-wrapper{
+    position: relative;
+    padding: 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    overflow: auto;
+}
+.appointment-calendar-grid-column{
+    height: 100%;
+    margin: 0;
+    padding: 0 5px;
+    flex: 0 0 calc(100% / 7);
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: center;
+    background: transparent;
+}
+
+.appointment-calendar-column-title{
+    color: #333;
+    text-align: center;
+    white-space: nowrap;
+    font-size: 15px;
+}
+.appointment-calendar-column-title span{
+    color: #1976d2;
+}
+
+.appointment-calendar-item{
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all .1s ease;
+    color: #1976d2;
+    border: 1px solid rgba(25,118,210,.3);
+    border-radius: 4px;
+}
+.appointment-calendar-item:hover{
+    background-color: rgba(25,118,210,.3);
+}
+
+.appointment-calendar-btn{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.appointment-calendar-btn.next{
+    right: 0;
+}
+.appointment-calendar-btn.back{
+    left: 0;
+}
+
+@media(max-width: 767px){
+    .appointment-calendar-grid-column{
+        flex: 0 0 calc(100% / 3);
+    }
+    .appointment-calendar-column-title{
+        font-size: 13px;
+    }
+}
