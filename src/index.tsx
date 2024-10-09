@@ -1,11 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App';
-import {CssBaseline} from "@mui/material";
-import {configure, runInAction, spy} from "mobx";
+import {configure, spy} from "mobx";
 import appState from './store/AppState';
 
-const btnAppointmentFirst = document.querySelectorAll(".appointment-first-btn")
+const btnAppointmentFirst = document.querySelectorAll(".appointment-umc-btn")
 btnAppointmentFirst.forEach(btn => {
     btn.addEventListener('click', function(){
         appState.isAppOpen = true;
@@ -27,7 +26,6 @@ if (process.env.NODE_ENV !== 'production'){
 
 ReactDOM.render(
   <React.StrictMode>
-      <CssBaseline />
       <App />
   </React.StrictMode>,
   document.getElementById('appointment-widget-root')

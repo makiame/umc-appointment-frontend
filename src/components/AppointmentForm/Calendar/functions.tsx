@@ -16,11 +16,12 @@ export function getScheduleItems(){
         !data.schedule[selected.clinic.uid][selected.specialty.uid] ||
         !data.schedule[selected.clinic.uid][selected.specialty.uid][selected.employee.uid]
     ) {
-        scheduleItems['error'] = `Нет данных для выбранной клиники, специальности или сотрудника`;
+        if(!appState.isLoading)
+        scheduleItems['error'] = `К сожалению, запись на выбранные услуги к данному
+                                                  специалисту невозможна на ближайшее время`;
         return scheduleItems;
     }
 
-    
     const employeeSchedule: IScheduleItem = data.schedule[selected.clinic.uid][selected.specialty.uid][selected.employee.uid];
     for (const employeeUid in data.schedule[selected.clinic.uid][selected.specialty.uid]) {
         if (data.schedule[selected.clinic.uid][selected.specialty.uid].hasOwnProperty(employeeUid)) {

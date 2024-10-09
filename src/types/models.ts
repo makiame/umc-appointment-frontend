@@ -70,7 +70,7 @@ export interface ITimeTableItem {
   formattedTimeEnd: string;
 }
 
-// Расписание по категориям (свободное, занятое и т.д.)
+
 export interface ITimeTable {
   free: {
     [date: string]: ITimeTableItem[];
@@ -83,7 +83,7 @@ export interface ITimeTable {
   };
 }
 
-// Интерфейс для элементов расписания конкретного специалиста
+
 export interface IScheduleItem {
   clinicUid: string;
   duration: string;
@@ -95,7 +95,7 @@ export interface IScheduleItem {
   error?: string;
 }
 
-// Тип данных расписания (вложенные объекты по клиникам и специальностям)
+
 export interface ISchedule {
   [clinicUid: string]: {
     [specialtyUid: string]: {
@@ -104,7 +104,7 @@ export interface ISchedule {
   };
 }
 
-// Общие данные 1С, которые используются в приложении
+
 export interface IOneCData {
   clinics: IOneCClinic[];
   employees: {
@@ -118,7 +118,7 @@ export interface IOneCData {
   defaultError?: string;
 }
 
-// Пропсы для календаря
+
 export interface ICalendarProps {
   scheduleItems: {
     [key: string]: ITimeTableItem[];
@@ -126,7 +126,6 @@ export interface ICalendarProps {
   disabled: boolean;
 }
 
-// Пропсы для текстового поля
 export interface ITextInputProps {
   required?: boolean;
   name: ETextFields;
@@ -134,7 +133,6 @@ export interface ITextInputProps {
   multiline?: boolean;
 }
 
-// Параметры для формирования заказа
 export interface IOrderParams {
   clinicUid: string;
   clinicName: string;
@@ -158,7 +156,6 @@ export interface IOrderParams {
   appointmentDuration: number;
 }
 
-// Ответ сервера
 export interface IResponse {
   success: boolean;
   error?: string;

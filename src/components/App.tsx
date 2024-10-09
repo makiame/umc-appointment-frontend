@@ -33,10 +33,10 @@ const App: FC = () => {
 
 
     return (
-          <>
+          <div>
               <AppointmentForm/>
               {appState.isUseFloatButton?<AppointmentButton/>:<></>}
-          </>
+          </div>
     );
 }
 

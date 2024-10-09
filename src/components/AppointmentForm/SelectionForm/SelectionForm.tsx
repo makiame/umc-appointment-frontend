@@ -20,15 +20,18 @@ import {
 } from "../../../types/selectedData";
 import { getScheduleItems } from "../Calendar/functions";
 import {runInAction} from "mobx";
+import {Simulate} from "react-dom/test-utils";
+import select = Simulate.select;
 
 const SelectionForm: FC = () => {
   const selected = appState.selected;
   const startFromDoctor = appState.isSelectDoctorBeforeService;
 
-  const getSchedule = () => {
+  const getSchedule = (employeeUid: string) => {
       const date = new Date();
+      date.setDate(date.getDate() + 1)
       const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
-      dataState.getSchedule(appState.getDaysCountSchedule, selected.clinic.uid, [selected.employee.uid], formattedDate);
+      dataState.getSchedule(appState.getDaysCountSchedule, selected.clinic.uid, [employeeUid], formattedDate);
   }
   const setDoctor = (e: any) => {
     const newState: ISelectionSetterParams = {
@@ -46,22 +49,20 @@ const SelectionForm: FC = () => {
       },
     };
     if (startFromDoctor) {
-      appState.isScheduleLoaded = false;
       newState.services = [];
-    } else {
-      appState.isScheduleLoaded = false;
     }
-
-    if (!startFromDoctor && !appState.isScheduleLoaded) {
-      getSchedule();
-    }
+    appState.isScheduleLoaded = false;
     appState.selected = newState;
+
+    if (!appState.isScheduleLoaded) {
+      getSchedule(e.target.value);
+    }
   };
   const setService = (e: any) => {
     let duration = dataState.getServiceByUid(e.target.value).duration;
     if (appState.isSelectDoctorBeforeService){
       dataState.servicesList.forEach(
-        (service: IService) => (service.uid == e.target.value? duration = service.duration : duration = duration)
+        (service: IService) => (service.uid === e.target.value? duration = service.duration : duration = duration)
       );
     }
     const newState: ISelectionSetterParams = {
@@ -86,8 +87,6 @@ const SelectionForm: FC = () => {
         name: "",
         uid: "",
       };
-    } else if (startFromDoctor && !appState.isScheduleLoaded) {
-      getSchedule();
     }
     appState.selected = newState;
   };
@@ -98,17 +97,20 @@ const SelectionForm: FC = () => {
 
   const [scheduleItems, setScheduleItems] = useState<any>({})
 
-  useEffect(() => {
-    if (appState.isScheduleLoaded) {
-      setScheduleItems(getScheduleItems());
-    }
-  }, [appState.isScheduleLoaded]);
+  const scheduleLoaded = appState.isScheduleLoaded;
+  const nomenclatureLoading = appState.isNomenclatureLoading;
 
   useEffect(() => {
-    if (appState.isNomenclatureLoading) {
+    if (scheduleLoaded && selected.specialty.uid && selected.employee.uid && selected.clinic.uid) {
+      setScheduleItems(getScheduleItems());
+    }
+  }, [scheduleLoaded]);
+
+  useEffect(() => {
+    if (nomenclatureLoading) {
       appState.isLoading = true;
     }
-  }, [appState.isNomenclatureLoading]);
+  }, [nomenclatureLoading]);
 
   const calendarDisabled = !(
     selected.services.length > 0 && selected.employee.uid.length > 0

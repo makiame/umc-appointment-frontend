@@ -1,5 +1,9 @@
 #appointment-widget-root *{
+    font-family: "Roboto", serif;
+}
 
+.head {
+    font-size: 30px !important;
 }
 
 #service-select-search-checkboxes-tags{

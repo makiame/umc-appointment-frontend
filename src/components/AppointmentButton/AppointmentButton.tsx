@@ -7,7 +7,6 @@ import dataState from "../../store/OneCDataState";
 import {IResponse} from "../../types/models";
 
 const AppointmentButton:FC = () => {
-
     useEffect(()=>{
         if (appState.isNeedToLoad){
             appState.isLoading = true;

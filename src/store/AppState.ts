@@ -16,30 +16,32 @@ class AppState {
         }
     }
 
-    private readonly DEMO_MODE:                     boolean = false;
-    private readonly privacyLink:                   string  = "#";
-    private readonly useGoogleCaptcha:              boolean = false;
-    private readonly GoogleCaptchaSiteToken:        string  = '6LfoEZ8pAAAAADA8JbaXhpM6vyNpKSSrcAjVEmQG';
-    private readonly useTimeSteps:                  boolean = true;
-    private readonly timeStepDurationMinutes:       number	= 20;
-    private readonly daysCountSchedule:             number	= 14;
+    private readonly DEMO_MODE:                            boolean = false;
+    private readonly privacyLink:                                  string  = "https://gazoptika.ru/upload/for-patient/Soglasie_na_obrabotku.pdf";
+    private readonly useGoogleCaptcha:                  boolean = false;
+    private readonly GoogleCaptchaSiteToken:          string  = '';
+    private readonly useTimeSteps:                          boolean = true;
+    private readonly timeStepDurationMinutes:       number = 20;
+    private readonly daysCountSchedule:                number = 14;
     private readonly strictCheckingOfRelations:     boolean	= true;
     private readonly showDoctorsWithoutDepartment:  boolean = false;
-    private readonly useMultipleServices:           boolean = false;
-    private readonly useFloatButton:                boolean = false;
-    private readonly useEmailNotification:          boolean = false;
-    private readonly apiUrl:                        string  = 'http://127.0.0.1:8000/api/medical/';
-    private readonly useOptimizetVersion:           boolean = true;
+    private readonly useMultipleServices:             boolean = false;
+    private readonly useFloatButton:                     boolean = true;
+    private readonly useEmailNotification:            boolean = false;
+    private readonly apiUrl:                                       string  = 'https://appointment.dzmed.ru/api/medical/';
+    private readonly useOptimizetVersion:            boolean = true;
+    private readonly alwaysOpen:                          boolean = false;
 
     private loading                     = true;
     private needToLoad                  = true;
-    private appOpen                     = false;
+    private appOpen                     = this.alwaysOpen? true : false;
     private canRender                   = true;
     private selectDoctorBeforeService 	= true;
     private nomenclatureLoaded          = false;
     private nomenclatureLoading         = false;
     private scheduleLoaded              = false;
     private activeStepNumber            = 0;
+    private isDoctor                                = false;
 
     //!!update
     private activePopupUid = ""
@@ -110,7 +112,12 @@ class AppState {
     get isActivePopupUid() {
         return this.activePopupUid;
     }
-
+    get isDoctorClicked() {
+        return this.isDoctor;
+    }
+    set isDoctorClicked(value: boolean) {
+        this.isDoctor = value;
+    }
     get getDaysCountSchedule() {
         return this.daysCountSchedule;
     }
@@ -173,7 +180,9 @@ class AppState {
         return this.appOpen;
     }
     set isAppOpen(value: boolean){
-        this.appOpen = value;
+        if (!this.alwaysOpen) {
+                this.appOpen = value;
+        }
     }
 
     get isCanRender() {
@@ -204,8 +213,6 @@ class AppState {
             this.setSecondStepToDefaults()
         }
         this.isAppOpen = open;
-        //!update
-        this.isActivePopupUid = "";
     }
 
     set validityOfTextFields(val: {[key:string]:boolean}){
@@ -290,6 +297,9 @@ class AppState {
     }
     get isUseMultipleServices(){
         return this.useMultipleServices;
+    }
+    get isAlwaysOpen() {
+        return this.alwaysOpen;
     }
     get privacyPageUrl(){
         return this.privacyLink;

@@ -50,7 +50,8 @@ class OneCDataState {
 
     public async loadData() {
         try {
-            const [clinics, employees] = await Promise.all([this.getClinics(), this.getEmployees()]);
+            const clinics = await this.getClinics();
+            const employees = await this.getEmployees();
             if (clinics.length > 0) {
                 if (Object.keys(employees).length > 0) {
                     return this.makeResponse(true);
@@ -217,6 +218,10 @@ class OneCDataState {
                         }
                     }
 
+                    if (typeof this.data.employees[uid].name !== "string") {
+                        canRender = false;
+                    }
+
                     if (canRender)
                     {
                         if (!appState.isSelectDoctorBeforeService)
@@ -260,14 +265,23 @@ class OneCDataState {
         const servicesList: IService[] = [];
         if(Object.keys(this.data.nomenclature).length > 0)
         {
+            console.log('obect case', Object.keys(this.data.nomenclature));
+            console.log('value', this.data.nomenclature);
+            console.log('length', Object.keys(this.data.nomenclature).length );
+
             for (let uid in this.data.nomenclature)
             {
                 if (!this.data.nomenclature.hasOwnProperty(uid)){
                     throw new Error("Employee uid not found on specialties render");
                 }
 
+                let parent: string = 'null';
+                if (this.data.nomenclature[uid].parent) {
+                    parent = this.data.nomenclature[uid].parent;
+                }
+
                 let renderCondition = (appState.selected.specialty.name.toLowerCase()
-                    ===  (this.data.nomenclature[uid].parent).toLowerCase());
+                    ===  (this.data.nomenclature[uid]?.parent).toLowerCase());
 
                 if (appState.isSelectDoctorBeforeService){
                     const selectedEmployeeUid = appState.selected.employee.uid;

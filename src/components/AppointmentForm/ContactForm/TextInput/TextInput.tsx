@@ -1,34 +1,39 @@
-import React, {ChangeEvent, FC, SyntheticEvent, useState} from 'react';
-import {emailIsValid, maskInput, phoneIsValid} from "../functions";
-import {ITextInputProps} from "../../../../types/models";
-import {ETextFields} from "../../../../types/selectedData";
-import {TextField} from "@mui/material";
+import React, { ChangeEvent, FC, SyntheticEvent, useState } from 'react';
+import { emailIsValid, maskInput, phoneIsValid } from "../functions";
+import { ITextInputProps } from "../../../../types/models";
+import { ETextFields } from "../../../../types/selectedData";
+import { TextField } from "@mui/material";
 import appState from "../../../../store/AppState";
-import {observer} from "mobx-react-lite";
+import { observer } from "mobx-react-lite";
 
 const TextInput: FC<ITextInputProps> = ({
-        name,
-        label,
-        required,
-        multiline
-    }) => {
+    name,
+    label,
+    required,
+    multiline
+}) => {
     const [helperText, setHelperText] = useState('');
-    const [isChanged, setIsChanged]   = useState((appState.selected.textFields[name].length > 0));
+    const [isChanged, setIsChanged] = useState((appState.selected.textFields[name].length > 0));
 
     const handleInput = (e: SyntheticEvent<HTMLInputElement>) => {
-        !isChanged ? setIsChanged(true) : void(0);
+        !isChanged ? setIsChanged(true) : void 0;
 
-        const input = (e.target as HTMLInputElement);
-        const name  = input.name;
-        let   value = input.value;
+        const input = e.target as HTMLInputElement;
+        const name = input.name;
+        let value = input.value;
 
-        if(name === ETextFields.comment) {
-            if ((value.length > 300)){
+        // Ограничение для поля code — только цифры
+        if (name === ETextFields.code) {
+            value = value.replace(/\D/g, ''); // Удаляет все нецифровые символы
+        }
+
+        if (name === ETextFields.comment) {
+            if (value.length > 300) {
                 return false;
             }
         }
 
-        if(name === ETextFields.phone){
+        if (name === ETextFields.phone) {
             value = maskInput(value, '+7(000)000-00-00');
         }
 
@@ -42,40 +47,48 @@ const TextInput: FC<ITextInputProps> = ({
     }
 
     const validateInput = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
+        const { name, value } = e.target;
 
         let isValid = true;
         let text = '';
 
         switch (name) {
-            case "name":
-            case "middleName":
-            case "surname":
-                if (value.length < 2){
+            case ETextFields.name:
+            case ETextFields.secondName:
+            case ETextFields.lastName:
+                if (value.length < 2) {
                     isValid = false;
                     text = 'Значение должно быть от 2 до 50 символов';
                 }
                 break;
-            case "phone":
-                if (!phoneIsValid(value)){
+            case ETextFields.phone:
+                if (!phoneIsValid(value)) {
                     isValid = false;
                     text = 'Некорректный номер телефона';
                 }
                 break;
-            case "email":
-                if (value.length > 0 && !emailIsValid(value)){
+            case ETextFields.email:
+                if (value.length > 0 && !emailIsValid(value)) {
                     isValid = false;
                     text = 'Некорректный email';
                 }
                 break;
-            case "comment":
-                //always valid
-                text =`Использовано ${value.length} символов из 300`;
+            case ETextFields.code:
+                if (value.length > 0 && !/^\d{6}$/.test(value)) { // Проверка на 6 цифр только если поле не пустое
+                    isValid = false;
+                    text = 'Код должен состоять из 6 цифр';
+                }
                 break;
+            case ETextFields.comment:
+                // Всегда валидный комментарий
+                text = `Использовано ${value.length} символов из 300`;
+                break;
+            default:
+                isValid = true;
         }
 
         setHelperText(text);
-        appState.validityOfTextFields = {[name]: isValid};
+        appState.validityOfTextFields = { [name]: isValid };
     }
 
     return (
@@ -89,13 +102,13 @@ const TextInput: FC<ITextInputProps> = ({
                    name={name}
                    label={label}
                    defaultValue={appState.selected.textFields[name]}
-                   type={'text'}
+                   type={name === ETextFields.code ? 'tel' : 'text'} // Устанавливаем type='tel' для поля "Код доктора"
                    error={isChanged && !appState.validityOfTextFields[name]}
                    helperText={helperText}
                    fullWidth
                    inputProps={{
-                       maxLength: multiline ? 300 : 50,
-                       autocomplete: name === 'phone' ? "new-password" : 'on',
+                       maxLength: name === ETextFields.code ? 6 : multiline ? 300 : 50, // Ограничение длины для кода
+                       autoComplete: name === ETextFields.phone ? "new-password" : 'on',
                    }}
         />
     );

@@ -85,7 +85,8 @@ const AppointmentForm:FC = () => {
                 <IconButton onClick={()=>appState.toggleAppointmentForm(false)}
                             sx={{position: 'absolute', top: '10px', right: '10px'}}
                 >
-                    <CloseIcon />
+                    {!appState.isAlwaysOpen? <CloseIcon /> : <></>}
+                    
                 </IconButton>
                 <Stepper activeStep={appState.activeStep} sx={{ pt: 2, pb: 1 }}>
                     {steps.map((step) => (

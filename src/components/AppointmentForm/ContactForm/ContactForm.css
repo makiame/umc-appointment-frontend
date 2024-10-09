@@ -1,0 +1,12 @@
+/* ContactForm.css */
+.doctor-code-container {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.doctor-code-container.visible {
+    max-height: 100px; /* Максимальная высота, чтобы вместить поле */
+    opacity: 1;
+}
