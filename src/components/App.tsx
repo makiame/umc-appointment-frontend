@@ -6,10 +6,30 @@ import dataState from "../store/OneCDataState";
 import {IResponse} from "../types/models";
 import appState from "../store/AppState";
 import AppointmentButton from './AppointmentButton/AppointmentButton';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+const theme = createTheme({
+    palette: {
+        text: {
+            primary: appState.primaryTextColor, // Основной цвет текста
+            secondary: appState.secondaryTextColor, // Второстепенный цвет текста
+        },
+        primary: {
+            main: appState.primaryColor,
+        },
+        secondary: {
+            main: appState.secondaryColor,
+        },
+    },
+    typography: {
+        fontFamily: appState.fontFamily,
+        fontSize: appState.fontSize
+    },
+});
+
 
 const App: FC = () => {
     useEffect(()=>{
-        if(!appState.isUseFloatButton) {
             if (appState.isNeedToLoad){
                 appState.isLoading = true;
                 dataState.loadData()
@@ -28,15 +48,14 @@ const App: FC = () => {
                     })
                     .finally(() => appState.isNeedToLoad = false)
             }
-        }
     });
 
 
     return (
-          <div>
+          <ThemeProvider theme={theme}>
               <AppointmentForm/>
               {appState.isUseFloatButton?<AppointmentButton/>:<></>}
-          </div>
+          </ThemeProvider>
     );
 }
 

@@ -24,7 +24,7 @@ export enum ETextFields{
     lastName = "lastName",
     phone = "phone",
     email = "email",
-    comment = "comment",
+    clientBirthday = "clientBirthday",
     code = "code"
 }
 export type ITextFields = {
@@ -38,6 +38,11 @@ export interface ISelectedParams{
     services:    IService[],
     specialty:  ISpecialty,
     textFields: ITextFields
+}
+
+export interface ISmsConfirmation {
+    phone: string,
+    code: string
 }
 
 export interface ISelectionSetterParams{

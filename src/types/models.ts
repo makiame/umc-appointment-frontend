@@ -161,3 +161,7 @@ export interface IResponse {
   error?: string;
   defaultError?: string;
 }
+
+export interface privacyLinkComparison {
+    [key: string] : string
+}

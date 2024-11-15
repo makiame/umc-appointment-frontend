@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",
+    "dayjs": "^1.11.13",
     "mobx": "^6.3.12",
     "mobx-react-lite": "^3.2.3",
     "react": "^17.0.2",

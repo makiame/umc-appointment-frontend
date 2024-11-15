@@ -7,26 +7,13 @@ import dataState from "../../store/OneCDataState";
 import {IResponse} from "../../types/models";
 
 const AppointmentButton:FC = () => {
-    useEffect(()=>{
-        if (appState.isNeedToLoad){
-            appState.isLoading = true;
-            dataState.loadData()
-                .then((res: IResponse) => {
-                    if (res && res.error){
-                        console.error("Loading data error - " + res.error);
-                        appState.isCanRender = false;
-                    }
-                    else if (res && res.success){
-                        appState.isLoading = false;
-                    }
-                    else{
-                        console.error("Loading data error.", res);
-                        appState.isCanRender = false;
-                    }
-                })
-                .finally(() => appState.isNeedToLoad = false)
+
+    useEffect(() => {
+        const wrapper = document.getElementById('appointment-button-wrapper');
+        if (wrapper) {
+            wrapper.style.setProperty('--pulse-bg-color', appState.primaryColor); // Новый цвет фона
         }
-    });
+    }, [appState.isLoading, appState.isAppOpen]);
 
     if (!appState.isCanRender){
         return <></>
@@ -37,6 +24,7 @@ const AppointmentButton:FC = () => {
              className={`${ !appState.isLoading && !appState.isAppOpen ? 'pulse' : ''}`}
         >
             <LoadingButton
+
                 onClick={() => appState.toggleAppointmentForm(true)}
                 loading={appState.isLoading}
                 loadingPosition="center"

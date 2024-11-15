@@ -8,7 +8,8 @@ import appState from '../../../store/AppState';
 import dataState from '../../../store/OneCDataState';
 import SubmitBtn from '../SubmitBtn/SubmitBtn';
 import ReCAPTCHA from 'react-google-recaptcha';
-import './ContactForm.css'; // Добавьте этот импорт для подключения CSS
+import './ContactForm.css';
+import SmsVerificationForm  from "../../SmsVerificationForm/SmsVerificationForm";
 
 const ContactForm: FC = () => {
     const fields = [
@@ -16,8 +17,8 @@ const ContactForm: FC = () => {
         { name: ETextFields.secondName, label: 'Ваше Отчество', required: true, multiline: false },
         { name: ETextFields.lastName, label: 'Ваша фамилия', required: true, multiline: false },
         { name: ETextFields.phone, label: 'Телефон', required: true, multiline: false },
+        { name: ETextFields.clientBirthday, label: 'Дата рождения', required: false, multiline: true },
         { name: ETextFields.email, label: 'Email', required: false, multiline: false },
-        { name: ETextFields.comment, label: 'Комментарий', required: false, multiline: true }
     ];
 
     const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
@@ -26,6 +27,20 @@ const ContactForm: FC = () => {
     const handleRecaptcha = (token: string | null) => {
         setRecaptchaToken(token);
     };
+
+    const [open, setOpen] = useState(false);
+
+    const handleClick = () => {
+        setOpen(true);
+    }
+
+    const getPrivacyLink = (): string => {
+        if (appState.privacyLinkComparisons.hasOwnProperty(appState.selected.clinic.uid)) return appState.privacyLinkComparisons[appState.selected.clinic.uid];
+
+        if (appState.privacyLinkComparisons.hasOwnProperty(appState.selected.clinic.name)) return appState.privacyLinkComparisons[appState.selected.clinic.name];
+
+        return appState.privacyPageUrl;
+    }
 
     const sendOrder = async () => {
         if (appState.isUseGoogleCaptcha) {
@@ -64,78 +79,82 @@ const ContactForm: FC = () => {
     };
 
     return (
-        <DialogContent>
-            <Button onClick={appState.stepBack} sx={{ mt: -2, ml: 1 }}>
-                Назад
-            </Button>
+        <>
+            <SmsVerificationForm open={open} setOpen={setOpen}/>
 
-            {fields.map((field) => (
-                <TextInput key={field.name} name={field.name} label={field.label} required={field.required} multiline={field.multiline} />
-            ))}
+            <DialogContent>
+                <Button onClick={appState.stepBack} sx={{ mt: -2, ml: 1 }}>
+                    Назад
+                </Button>
 
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                    alignItems: 'center',
-                    justifyItems: 'center',
-                    width: '100px',
-                    paddingLeft: '8px'
-                }}
-            >
-                <Typography style={{    fontFamily: "Roboto, Helvetica, Arial, sans-serif",
-                                    fontWeight: '400',
-                                    fontSize: '0.875rem',
-                                    lineHeight: '1.43',
-                                    letterSpacing: '0.01071em',
-                                    display: 'block'}}>Я врач</Typography>
-                <Checkbox
+                {fields.map((field) => (
+                    <TextInput key={field.name} name={field.name} label={field.label} required={field.required} multiline={field.multiline} />
+                ))}
 
-                    size={"small"}
-                    checked={appState.isDoctorClicked}
-                    onChange={() => appState.isDoctorClicked = !appState.isDoctorClicked}
-                />
-            </div>
-
-            {/* Условное рендеринг поля с CSS-анимацией */}
-            <div className={`doctor-code-container ${appState.isDoctorClicked ? 'visible' : 'hidden'}`}>
-                <TextInput
-                    name={ETextFields.code}
-                    label="Код доктора"
-                    required={false}
-                    multiline={false}
-                />
-            </div>
-
-            {appState.isUseGoogleCaptcha ? (
-                <>
-                    <div style={{ paddingTop: '8px' }}>
-                        <ReCAPTCHA sitekey="6LfoEZ8pAAAAADA8JbaXhpM6vyNpKSSrcAjVEmQG" onChange={handleRecaptcha} />
-                    </div>
-                    <span className="captcha-error" style={{ color: 'red' }}>
-                        {errorCaptcha}
-                    </span>
-                </>
-            ) : null}
-
-            <DialogActions sx={{ display: 'flex', justifyContent: 'center', mt: '30px' }}>
-                <SubmitBtn disabled={!appState.checkTextFields() || appState.isLoading} clickHandler={sendOrder} />
-            </DialogActions>
-
-            <DialogContentText sx={{ textAlign: 'center' }}>
-                <span>Отправляя заявку вы соглашаетесь с </span>
-                <Link
-                    href={appState.privacyPageUrl}
-                    rel="noopener noreferrer"
-                    target={'_blank'}
-                    variant="body2"
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                        justifyItems: 'center',
+                        width: '100px',
+                        paddingLeft: '8px'
+                    }}
                 >
-                    политикой конфиденциальности
-                </Link>
-                <span> сайта</span>
-            </DialogContentText>
-        </DialogContent>
+                    <Typography style={{    fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+                                        fontWeight: '400',
+                                        fontSize: '0.875rem',
+                                        lineHeight: '1.43',
+                                        letterSpacing: '0.01071em',
+                                        display: 'block'}}>Я врач</Typography>
+                    <Checkbox
+
+                        size={"small"}
+                        checked={appState.isDoctorClicked}
+                        onChange={() => appState.isDoctorClicked = !appState.isDoctorClicked}
+                    />
+                </div>
+
+                {/* Условное рендеринг поля с CSS-анимацией */}
+                <div className={`doctor-code-container ${appState.isDoctorClicked ? 'visible' : 'hidden'}`}>
+                    <TextInput
+                        name={ETextFields.code}
+                        label="Код доктора"
+                        required={false}
+                        multiline={false}
+                    />
+                </div>
+
+                {appState.isUseGoogleCaptcha ? (
+                    <>
+                        <div style={{ paddingTop: '8px' }}>
+                            <ReCAPTCHA sitekey={appState.getGoogleCaptchaSiteToken} onChange={handleRecaptcha} />
+                        </div>
+                        <span className="captcha-error" style={{ color: 'red' }}>
+                            {errorCaptcha}
+                        </span>
+                    </>
+                ) : null}
+
+                <DialogActions sx={{ display: 'flex', justifyContent: 'center', mt: '30px' }}>
+                    <SubmitBtn disabled={!appState.checkTextFields() || appState.isLoading} clickHandler={handleClick} />
+                </DialogActions>
+
+                <DialogContentText sx={{ textAlign: 'center' }}>
+                    <span>Отправляя заявку вы соглашаетесь с </span>
+                    <Link
+                        href={getPrivacyLink()}
+                        rel="noopener noreferrer"
+                        target={'_blank'}
+                        variant="body2"
+                    >
+                        политикой конфиденциальности
+                    </Link>
+                    <span> сайта</span>
+                </DialogContentText>
+            </DialogContent>
+        </>
     );
 };
 

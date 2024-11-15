@@ -15,8 +15,6 @@ import ContactForm from "./ContactForm/ContactForm";
 import {observer} from "mobx-react-lite";
 import appState from "../../store/AppState";
 import "./AppointmentForm.css";
-import OneCDataState from '../../store/OneCDataState';
-import { IClinic, IService } from '../../types/selectedData';
 
 
 const AppointmentForm:FC = () => {
@@ -46,32 +44,6 @@ const AppointmentForm:FC = () => {
         }
     }
 
-    //!!update
-    let selectedDefault = {
-        clinic: {
-            name: "",
-            uid: ""
-        },
-        specialty: {
-            name: '',
-            uid: ''
-        },
-        employee: {
-            name: '',
-            uid: ''
-        },
-        dateTime: {
-            date:'',
-            timeBegin:'',
-            timeEnd:'',
-            formattedDate:'',
-            formattedTimeBegin:'',
-            formattedTimeEnd:''
-        },
-        services: []
-    };
-
-    
     return (
         <Dialog open={appState.isAppOpen}
                 onClose={()=>appState.toggleAppointmentForm(false)}

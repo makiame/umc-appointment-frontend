@@ -1,5 +1,9 @@
-#appointment-widget-root *{
-    font-family: "Roboto", serif;
+
+@font-face {
+    font-family: 'HeliosCond';
+    src: url('../fonts/HeliosCond.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
 .head {

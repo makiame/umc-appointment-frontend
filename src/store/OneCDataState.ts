@@ -72,8 +72,13 @@ class OneCDataState {
             const response = await fetch(`${AppState.getApiUrl}clinics`, this.getRequestParams);
             if (response.ok) {
                 const data: IOneCClinic[]  = Object.values(await response.json());
-                this.data.clinics = data;
-                return Promise.resolve(data);
+
+                const clinics = data.filter((item) => {
+                    return appState.clinicsComparisons.includes(item.name) || appState.clinicsComparisons.includes(item.uid);
+                })
+
+                this.data.clinics = clinics;
+                return Promise.resolve(clinics);
             } else{
                 return Promise.reject(`Get data error. Status code ${response.status}`);
             }
@@ -265,10 +270,6 @@ class OneCDataState {
         const servicesList: IService[] = [];
         if(Object.keys(this.data.nomenclature).length > 0)
         {
-            console.log('obect case', Object.keys(this.data.nomenclature));
-            console.log('value', this.data.nomenclature);
-            console.log('length', Object.keys(this.data.nomenclature).length );
-
             for (let uid in this.data.nomenclature)
             {
                 if (!this.data.nomenclature.hasOwnProperty(uid)){

@@ -5,13 +5,14 @@ import { ETextFields } from "../../../../types/selectedData";
 import { TextField } from "@mui/material";
 import appState from "../../../../store/AppState";
 import { observer } from "mobx-react-lite";
+import dayjs from 'dayjs';
 
 const TextInput: FC<ITextInputProps> = ({
-    name,
-    label,
-    required,
-    multiline
-}) => {
+                                            name,
+                                            label,
+                                            required,
+                                            multiline
+                                        }) => {
     const [helperText, setHelperText] = useState('');
     const [isChanged, setIsChanged] = useState((appState.selected.textFields[name].length > 0));
 
@@ -22,14 +23,13 @@ const TextInput: FC<ITextInputProps> = ({
         const name = input.name;
         let value = input.value;
 
-        // Ограничение для поля code — только цифры
-        if (name === ETextFields.code) {
-            value = value.replace(/\D/g, ''); // Удаляет все нецифровые символы
-        }
-
-        if (name === ETextFields.comment) {
-            if (value.length > 300) {
-                return false;
+        if (name === ETextFields.clientBirthday) {
+            // Форматирование даты в формате "DD/MM/YYYY"
+            value = value.replace(/\D/g, ''); // Удаляем все нецифровые символы
+            if (value.length >= 5) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4) + '/' + value.slice(4, 8);
+            } else if (value.length >= 3) {
+                value = value.slice(0, 2) + '/' + value.slice(2);
             }
         }
 
@@ -73,15 +73,26 @@ const TextInput: FC<ITextInputProps> = ({
                     text = 'Некорректный email';
                 }
                 break;
+            case ETextFields.clientBirthday:
+                // Проверка корректности даты рождения
+                const currentYear = dayjs().year();
+                const minYear = currentYear - 12;
+                const maxYear = currentYear;
+
+                const [day, month, year] = value.split('/').map(Number);
+                const clientBirthday = dayjs(`${year}-${month}-${day}`);
+
+                console.log(clientBirthday);
+                if (!clientBirthday.isValid() || year > maxYear || month > 12 || day > 31 || year < 1920) {
+                    isValid = false;
+                    text = 'Некорректная дата рождения';
+                }
+                break;
             case ETextFields.code:
-                if (value.length > 0 && !/^\d{6}$/.test(value)) { // Проверка на 6 цифр только если поле не пустое
+                if (value.length > 0 && !/^\d{6}$/.test(value)) {
                     isValid = false;
                     text = 'Код должен состоять из 6 цифр';
                 }
-                break;
-            case ETextFields.comment:
-                // Всегда валидный комментарий
-                text = `Использовано ${value.length} символов из 300`;
                 break;
             default:
                 isValid = true;
@@ -102,12 +113,12 @@ const TextInput: FC<ITextInputProps> = ({
                    name={name}
                    label={label}
                    defaultValue={appState.selected.textFields[name]}
-                   type={name === ETextFields.code ? 'tel' : 'text'} // Устанавливаем type='tel' для поля "Код доктора"
+                   type={name === ETextFields.code ? 'tel' : 'text'}
                    error={isChanged && !appState.validityOfTextFields[name]}
                    helperText={helperText}
                    fullWidth
                    inputProps={{
-                       maxLength: name === ETextFields.code ? 6 : multiline ? 300 : 50, // Ограничение длины для кода
+                       maxLength: name === ETextFields.clientBirthday ? 10 : name === ETextFields.code ? 6 : multiline ? 300 : 50,
                        autoComplete: name === ETextFields.phone ? "new-password" : 'on',
                    }}
         />

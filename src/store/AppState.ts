@@ -1,99 +1,216 @@
 import {makeAutoObservable} from "mobx";
 import {
     ETextFields,
-    ISelectedParams, IService
+    ISelectedParams, IService, ISmsConfirmation
 } from "../types/selectedData";
 import dataState from "./OneCDataState";
+import {privacyLinkComparison} from "../types/models";
 
 class AppState {
     constructor() {
-        makeAutoObservable(this,{
+        makeAutoObservable(this, {
             checkTextFields: false,
             isServicesAvailable: false
         });
-        if (process.env.NODE_ENV === "development"){
+        if (process.env.NODE_ENV === "development") {
             this.DEMO_MODE = false;
         }
     }
 
-    private readonly DEMO_MODE:                            boolean = false;
-    private readonly privacyLink:                                  string  = "https://gazoptika.ru/upload/for-patient/Soglasie_na_obrabotku.pdf";
-    private readonly useGoogleCaptcha:                  boolean = false;
-    private readonly GoogleCaptchaSiteToken:          string  = '';
-    private readonly useTimeSteps:                          boolean = true;
-    private readonly timeStepDurationMinutes:       number = 20;
-    private readonly daysCountSchedule:                number = 14;
-    private readonly strictCheckingOfRelations:     boolean	= true;
-    private readonly showDoctorsWithoutDepartment:  boolean = false;
-    private readonly useMultipleServices:             boolean = false;
-    private readonly useFloatButton:                     boolean = true;
-    private readonly useEmailNotification:            boolean = false;
-    private readonly apiUrl:                                       string  = 'https://appointment.dzmed.ru/api/medical/';
-    private readonly useOptimizetVersion:            boolean = true;
-    private readonly alwaysOpen:                          boolean = false;
+    /* App settings
+     *
+     * There you can manipulate on app.
+     *
+     */
+    private readonly DEMO_MODE: boolean                    = false;
+    private readonly privacyLink: string                   = "https://gazoptika.ru/upload/for-patient/Soglasie_na_obrabotku.pdf";
+    private readonly daysCountSchedule: number             = 14; // Дней выгрузки расписания
+    private readonly apiUrl: string                        = 'http://127.0.0.1:8000/api/medical/'; // Адрес серера
 
-    private loading                     = true;
-    private needToLoad                  = true;
-    private appOpen                     = this.alwaysOpen? true : false;
-    private canRender                   = true;
-    private selectDoctorBeforeService 	= true;
-    private nomenclatureLoaded          = false;
-    private nomenclatureLoading         = false;
-    private scheduleLoaded              = false;
-    private activeStepNumber            = 0;
-    private isDoctor                                = false;
+    // Список названий и uid клиник для отображения, будут отображаться только указанные клиники.
+    private readonly clinicsComparison: Array<string>      = [
+                                                                '5896c946-7ffc-11ec-cd9d-2cfda13451df',
+                                                                'Тюмень, Республики 157 (Восток)'
+                                                             ];
 
-    //!!update
-    private activePopupUid = ""
-    private spam = false;
+    // Сопоставление клиник и ссылок на условия конф. информации.
+    private readonly privacyLinkComparison: privacyLinkComparison = {
+                                                                '5896c946-7ffc-11ec-cd9d-2cfda13451df':
+                                                                    'https://gazoptika.ru/upload/for-patient/Soglasie_na_obrabotku.pdf',
+                                                                'Тюмень, Республики 157 (Восток)':
+                                                                    'https://gazoptika.ru/upload/for-patient/NeSoglasie_na_obrabotku2.pdf'
+                                                             }
+    // Google captcha
+    private readonly useGoogleCaptcha: boolean             = false;
+    private readonly GoogleCaptchaSiteToken: string        = '';
 
-        private selectedValues: ISelectedParams = {
-            clinic: {
-                uid: '',
-                name: '',
-            },
-            specialty: {
-                uid: '',
-                name: '',
-            },
-            services: [],
-            employee: {
-                uid: '',
-                name: '',
-            },
-            dateTime: {
-                date: '',
-                timeBegin: '',
-                timeEnd: '',
-                formattedDate: '',
-                formattedTimeBegin: '',
-                formattedTimeEnd: '',
-            },
-            textFields: {
-                name: '',
-                secondName: '',
-                lastName: '',
-                phone: '',
-                email: '',
-                comment: '',
-                code: '',
-            }
+    // Appointment buttons
+    private readonly useFloatButton: boolean               = true; // Добавляет плавающую кнопку.
+
+
+    // App style
+    private readonly alwaysOpen: boolean                   = false; // Делает окно записи всегда развернутым.
+    public readonly primaryColor: string                   = '#F5D716';
+    public readonly secondaryColor: string                 = '#2280ea';
+    public readonly primaryTextColor: string               = '#0A0A0A';
+    public readonly secondaryTextColor: string             = '#2f2f2f';
+    public readonly fontFamily: string                     = 'HeliosCond, Arial, sans-serif';
+    public readonly fontSize: number                       = 14;
+
+
+
+
+
+
+
+
+
+
+    /* App logical part
+    *
+    * Please, don't change values below
+    *
+    */
+    private loading = true;
+    private needToLoad = true;
+    private appOpen = this.alwaysOpen;
+    private canRender = true;
+    private selectDoctorBeforeService = true;
+    private nomenclatureLoaded = false;
+    private nomenclatureLoading = false;
+    private scheduleLoaded = false;
+    private activeStepNumber = 0;
+    private isDoctor = false;
+    private readonly useTimeSteps: boolean = true;
+    private readonly timeStepDurationMinutes: number = 20;
+    private readonly strictCheckingOfRelations: boolean = true;
+    private readonly showDoctorsWithoutDepartment: boolean = false;
+    private readonly useMultipleServices: boolean = false;
+
+
+    // Sms container
+    private sentSms: boolean = false;
+    private timerSms: number = 300;
+    private timerSmsActive: boolean = false;
+    private attemptsSms: number = 0;
+    private errorSms: boolean = false;
+    private successSms: boolean = false;
+    private disabledSms: boolean = false;
+    private smsConfirmation: ISmsConfirmation = {
+        phone: '',
+        code: ''
+    }
+
+    private selectedValues: ISelectedParams = {
+        clinic: {
+            uid: '',
+            name: '',
+        },
+        specialty: {
+            uid: '',
+            name: '',
+        },
+        services: [],
+        employee: {
+            uid: '',
+            name: '',
+        },
+        dateTime: {
+            date: '',
+            timeBegin: '',
+            timeEnd: '',
+            formattedDate: '',
+            formattedTimeBegin: '',
+            formattedTimeEnd: '',
+        },
+        textFields: {
+            name: '',
+            secondName: '',
+            lastName: '',
+            phone: '',
+            email: '',
+            clientBirthday: '',
+            code: '',
         }
+    }
 
-    private validTextFields:{[key in ETextFields]:boolean} = {
+    private validTextFields: { [key in ETextFields]: boolean } = {
         name: false,
         secondName: false,
         lastName: false,
         phone: false,
         email: true,
-        comment: true,
+        clientBirthday: false,
         code: true,
     }
 
-
     private durationServices: number = 0;
-
     private result: boolean = false;
+
+
+    get smsTimer() {
+        return this.timerSms;
+    }
+
+    set smsTimer(val: number) {
+        this.timerSms = val;
+    }
+
+    get smsAttempts() {
+        return this.attemptsSms;
+    }
+
+    set smsAttempts(val: number) {
+        this.attemptsSms = val;
+    }
+
+    get smsIsSent() {
+        return this.sentSms;
+    }
+
+    set smsIsSent(value: boolean) {
+        this.sentSms = value;
+    }
+
+    get smsTimerIsActive() {
+        return this.timerSmsActive;
+    }
+
+    set smsTimerIsActive(value: boolean) {
+        this.timerSmsActive = value;
+    }
+
+    get smsError() {
+        return this.errorSms;
+    }
+
+    set smsError(val: boolean) {
+        this.errorSms = val;
+    }
+
+    get smsDisabled() {
+        return this.disabledSms;
+    }
+
+    set smsDisabled(val: boolean) {
+        this.disabledSms = val;
+    }
+
+    get smsIsSuccess() {
+        return this.successSms;
+    }
+
+    set smsIsSuccess(val: boolean) {
+        this.successSms = val;
+    }
+
+    get clinicsComparisons() {
+        return this.clinicsComparison;
+    }
+
+    get privacyLinkComparisons() {
+        return this.privacyLinkComparison;
+    }
 
     set serviceDuration(data: number) {
         this.durationServices = data;
@@ -103,45 +220,39 @@ class AppState {
         return this.durationServices;
     }
 
-    get isOptimizedVersion() {
-        return this.useOptimizetVersion;
-    }
-    get isUseEmailNotification() {
-        return this.useEmailNotification;
-    }
-    get isActivePopupUid() {
-        return this.activePopupUid;
-    }
     get isDoctorClicked() {
         return this.isDoctor;
     }
+
     set isDoctorClicked(value: boolean) {
         this.isDoctor = value;
     }
+
     get getDaysCountSchedule() {
         return this.daysCountSchedule;
     }
+
     get isUseFloatButton() {
         return this.useFloatButton;
     }
+
     get getGoogleCaptchaSiteToken() {
         return this.GoogleCaptchaSiteToken;
     }
-    set isActivePopupUid(value: string){
-        this.activePopupUid = value;
+
+    get smsConfirmationData() {
+        return this.smsConfirmation;
     }
 
-    get isSpam() {
-        return this.spam;
-    }
-    set isSpam(value: boolean){
-        this.spam = value;
+    set smsConfirmationData(sms: any) {
+        this.smsConfirmation = {...this.smsConfirmation, ...sms};
     }
 
     get isLoading() {
         return this.loading;
     }
-    set isLoading(value: boolean){
+
+    set isLoading(value: boolean) {
         this.loading = value;
     }
 
@@ -172,42 +283,46 @@ class AppState {
     get isNeedToLoad() {
         return this.needToLoad;
     }
-    set isNeedToLoad(value: boolean){
+
+    set isNeedToLoad(value: boolean) {
         this.needToLoad = value;
     }
 
     get isAppOpen() {
         return this.appOpen;
     }
-    set isAppOpen(value: boolean){
+
+    set isAppOpen(value: boolean) {
         if (!this.alwaysOpen) {
-                this.appOpen = value;
+            this.appOpen = value;
         }
     }
 
     get isCanRender() {
         return this.canRender;
     }
-    set isCanRender(value: boolean){
+
+    set isCanRender(value: boolean) {
         this.canRender = value;
     }
 
-    get activeStep(){
+    get activeStep() {
         return this.activeStepNumber;
     }
+
     stepNext = () => {
         this.activeStepNumber++;
     }
     stepBack = () => {
         this.activeStepNumber--;
     }
-    set setStep(value: number){
+
+    set setStep(value: number) {
         this.activeStepNumber = value;
     }
 
     toggleAppointmentForm(open: boolean) {
-        if (!open && this.activeStep === 3)
-        {
+        if (!open && this.activeStep === 3) {
             this.isNeedToLoad = true;
             this.activeStepNumber = 0
             this.setSecondStepToDefaults()
@@ -215,16 +330,18 @@ class AppState {
         this.isAppOpen = open;
     }
 
-    set validityOfTextFields(val: {[key:string]:boolean}){
+    set validityOfTextFields(val: { [key: string]: boolean }) {
         this.validTextFields = {...this.validTextFields, ...val};
     }
+
     get validityOfTextFields() {
         return this.validTextFields;
     }
-    checkTextFields(){
+
+    checkTextFields() {
         let allValid = true;
         for (const key in this.validTextFields) {
-            if (this.validityOfTextFields[key] === false){
+            if (this.validityOfTextFields[key] === false) {
                 allValid = false;
                 break;
             }
@@ -235,23 +352,33 @@ class AppState {
     get selected(): ISelectedParams {
         return this.selectedValues;
     }
-    set selected(selected: any){
+
+    set selected(selected: any) {
         this.selectedValues = {...this.selectedValues, ...selected};
     }
-    setSecondStepToDefaults(){
+
+    setSecondStepToDefaults() {
         this.selected = {
             services: [],
-            employee: { uid: '', name: '', },
-            dateTime: { date: '', timeBegin: '', timeEnd: '', formattedDate: '', formattedTimeBegin: '', formattedTimeEnd: ''}
+            employee: {uid: '', name: '',},
+            dateTime: {
+                date: '',
+                timeBegin: '',
+                timeEnd: '',
+                formattedDate: '',
+                formattedTimeBegin: '',
+                formattedTimeEnd: ''
+            }
         }
     }
-    isServicesAvailable(): boolean{
+
+    isServicesAvailable(): boolean {
         let allAvailable = true;
-        for(let i=0; i < this.selectedValues.services.length; i++){
+        for (let i = 0; i < this.selectedValues.services.length; i++) {
             const available = dataState.servicesList.find(
                 (service: IService) => service.uid === this.selectedValues.services[i].uid
             );
-            if (!available){
+            if (!available) {
                 allAvailable = false;
                 break;
             }
@@ -259,10 +386,11 @@ class AppState {
         return allAvailable;
     }
 
-    get isSelectDoctorBeforeService(){
+    get isSelectDoctorBeforeService() {
         return this.selectDoctorBeforeService;
     }
-    set isSelectDoctorBeforeService(value: boolean){
+
+    set isSelectDoctorBeforeService(value: boolean) {
         this.selectDoctorBeforeService = value;
     }
 
@@ -273,35 +401,44 @@ class AppState {
     get appResult() {
         return this.result;
     }
-    set appResult(value: boolean){
+
+    set appResult(value: boolean) {
         this.result = value;
     }
 
     get isDemoMode() {
         return this.DEMO_MODE;
     }
-    get timeStepDuration(){
+
+    get timeStepDuration() {
         return this.timeStepDurationMinutes;
     }
-    get isUseTimeSteps(){
+
+    get isUseTimeSteps() {
         return this.useTimeSteps;
     }
-    get isUseGoogleCaptcha(){
+
+    get isUseGoogleCaptcha() {
         return this.useGoogleCaptcha;
     }
-    get isStrictCheckingOfRelations(){
+
+    get isStrictCheckingOfRelations() {
         return this.strictCheckingOfRelations;
     }
-    get isShowDoctorsWithoutDepartment(){
+
+    get isShowDoctorsWithoutDepartment() {
         return this.showDoctorsWithoutDepartment;
     }
-    get isUseMultipleServices(){
+
+    get isUseMultipleServices() {
         return this.useMultipleServices;
     }
+
     get isAlwaysOpen() {
         return this.alwaysOpen;
     }
-    get privacyPageUrl(){
+
+    get privacyPageUrl() {
         return this.privacyLink;
     }
 }
