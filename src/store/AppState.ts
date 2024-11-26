@@ -25,20 +25,20 @@ class AppState {
     private readonly DEMO_MODE: boolean                    = false;
     private readonly privacyLink: string                   = "https://gazoptika.ru/upload/for-patient/Soglasie_na_obrabotku.pdf";
     private readonly daysCountSchedule: number             = 14; // Дней выгрузки расписания
-    private readonly apiUrl: string                        = 'http://127.0.0.1:8000/api/medical/'; // Адрес серера
+    private readonly apiUrl: string                        = 'https://appointment.dzmed.ru/api/medical/'; // Адрес серера
 
     // Список названий и uid клиник для отображения, будут отображаться только указанные клиники.
     private readonly clinicsComparison: Array<string>      = [
-                                                                '5896c946-7ffc-11ec-cd9d-2cfda13451df',
-                                                                'Тюмень, Республики 157 (Восток)'
+                                                                    "21e7d16c-05a2-11ec-1686-2cfda13451df"
                                                              ];
+
+    readonly clinicsUidNegativeComparison: Array<string>      = [
+
+    ];
 
     // Сопоставление клиник и ссылок на условия конф. информации.
     private readonly privacyLinkComparison: privacyLinkComparison = {
-                                                                '5896c946-7ffc-11ec-cd9d-2cfda13451df':
-                                                                    'https://gazoptika.ru/upload/for-patient/Soglasie_na_obrabotku.pdf',
-                                                                'Тюмень, Республики 157 (Восток)':
-                                                                    'https://gazoptika.ru/upload/for-patient/NeSoglasie_na_obrabotku2.pdf'
+                                                                '21e7d16c-05a2-11ec-1686-2cfda13451df': 'https://dzmed.ru/soglasie152'
                                                              }
     // Google captcha
     private readonly useGoogleCaptcha: boolean             = false;
@@ -50,10 +50,11 @@ class AppState {
 
     // App style
     private readonly alwaysOpen: boolean                   = false; // Делает окно записи всегда развернутым.
-    public readonly primaryColor: string                   = '#F5D716';
+    public readonly primaryColor: string                   = '#1976d2';
     public readonly secondaryColor: string                 = '#2280ea';
     public readonly primaryTextColor: string               = '#0A0A0A';
     public readonly secondaryTextColor: string             = '#2f2f2f';
+    public readonly primaryCalendarTextColor: string       = '#2280ea';
     public readonly fontFamily: string                     = 'HeliosCond, Arial, sans-serif';
     public readonly fontSize: number                       = 14;
 
@@ -86,6 +87,7 @@ class AppState {
     private readonly strictCheckingOfRelations: boolean = true;
     private readonly showDoctorsWithoutDepartment: boolean = false;
     private readonly useMultipleServices: boolean = false;
+    private termsAccepted: boolean = false;
 
 
     // Sms container
@@ -170,6 +172,14 @@ class AppState {
 
     set smsIsSent(value: boolean) {
         this.sentSms = value;
+    }
+
+    get termsIsAccepted() {
+        return this.termsAccepted;
+    }
+
+    set termsIsAccepted(val: boolean) {
+        this.termsAccepted = val;
     }
 
     get smsTimerIsActive() {

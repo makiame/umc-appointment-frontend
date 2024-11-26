@@ -73,9 +73,18 @@ class OneCDataState {
             if (response.ok) {
                 const data: IOneCClinic[]  = Object.values(await response.json());
 
-                const clinics = data.filter((item) => {
+                let clinics: IOneCClinic[] = appState.clinicsComparisons.length > 0 ? data.filter((item) => {
+
                     return appState.clinicsComparisons.includes(item.name) || appState.clinicsComparisons.includes(item.uid);
-                })
+                    })
+                    :
+                    data;
+
+                if (appState.clinicsUidNegativeComparison.length > 0) {
+                    clinics = clinics.filter((clinic) => {
+                        return !appState.clinicsUidNegativeComparison.includes(clinic.uid)
+                    })
+                }
 
                 this.data.clinics = clinics;
                 return Promise.resolve(clinics);

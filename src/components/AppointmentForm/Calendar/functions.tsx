@@ -1,7 +1,7 @@
 import appState from "../../../store/AppState";
 import dataState from "../../../store/OneCDataState";
 import {IScheduleItem, ITimeTableItem} from "../../../types/models";
-import {Stack} from "@mui/material";
+import {Stack, Typography} from "@mui/material";
 import React from "react";
 import {IService} from "../../../types/selectedData";
 
@@ -138,18 +138,18 @@ export const getCalendarColumns = (scheduleItems: { [key:string]:Array<ITimeTabl
         if (scheduleItems.hasOwnProperty(key)){
             columns.push(
                 <Stack spacing={1} key={key} sx={{textAlign:'center'}}>
-                    <h4 className={'appointment-calendar-column-title'}>
+                    <Typography variant={'body1'} className={'appointment-calendar-column-title'}>
                         {convertDateToDisplay(key)}<br/>
-                        <span>{readDateInfo(key).weekDay}</span>
-                    </h4>
+                        <Typography variant={'body1'}  sx={{ color: appState.primaryCalendarTextColor }}  >{readDateInfo(key).weekDay}</Typography>
+                    </Typography>
                     {
                         scheduleItems[key].map((item: ITimeTableItem) => {
                             return(
-                                <div  key={`${item.date}${item.timeBegin}`}
+                                <Typography variant={'body1'} sx={{ color: appState.primaryCalendarTextColor }} key={`${item.date}${item.timeBegin}`}
                                       className={'appointment-calendar-item'}
                                       data-value={JSON.stringify(item)}
                                       onClick={handlerClick}
-                                >{item.formattedTimeBegin}</div>
+                                >{item.formattedTimeBegin}</Typography>
                             )
                         })
                     }

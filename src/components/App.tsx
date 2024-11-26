@@ -23,7 +23,7 @@ const theme = createTheme({
     },
     typography: {
         fontFamily: appState.fontFamily,
-        fontSize: appState.fontSize
+        fontSize: appState.fontSize,
     },
 });
 

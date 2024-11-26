@@ -17,7 +17,7 @@ const ContactForm: FC = () => {
         { name: ETextFields.secondName, label: 'Ваше Отчество', required: true, multiline: false },
         { name: ETextFields.lastName, label: 'Ваша фамилия', required: true, multiline: false },
         { name: ETextFields.phone, label: 'Телефон', required: true, multiline: false },
-        { name: ETextFields.clientBirthday, label: 'Дата рождения', required: false, multiline: true },
+        { name: ETextFields.clientBirthday, label: 'Дата рождения', required: true, multiline: true },
         { name: ETextFields.email, label: 'Email', required: false, multiline: false },
     ];
 
@@ -31,8 +31,16 @@ const ContactForm: FC = () => {
     const [open, setOpen] = useState(false);
 
     const handleClick = () => {
-        setOpen(true);
+        if (!appState.termsIsAccepted) {
+            alert('Пожалуйста, согласитесь с политикой конфиденциальности, чтобы продолжить!');
+        } else {
+            setOpen(true);
+        }
     }
+
+    const handleChangeTerm = (event: React.ChangeEvent<HTMLInputElement>) => {
+        appState.termsIsAccepted = event.target.checked;
+    };
 
     const getPrivacyLink = (): string => {
         if (appState.privacyLinkComparisons.hasOwnProperty(appState.selected.clinic.uid)) return appState.privacyLinkComparisons[appState.selected.clinic.uid];
@@ -142,16 +150,16 @@ const ContactForm: FC = () => {
                 </DialogActions>
 
                 <DialogContentText sx={{ textAlign: 'center' }}>
-                    <span>Отправляя заявку вы соглашаетесь с </span>
-                    <Link
-                        href={getPrivacyLink()}
-                        rel="noopener noreferrer"
-                        target={'_blank'}
-                        variant="body2"
-                    >
-                        политикой конфиденциальности
-                    </Link>
-                    <span> сайта</span>
+                        <Checkbox size={"small"} checked={appState.termsIsAccepted} onChange={handleChangeTerm} sx={{ padding: '2px', marginBottom: '1px'}}></Checkbox>
+                        <span>Я даю согласие на обработку персональных данных в соответствии с </span>
+                        <Link
+                            href={getPrivacyLink()}
+                            rel="noopener noreferrer"
+                            target={'_blank'}
+                            variant="body1"
+                        >
+                            Политикой конфиденциальности
+                        </Link>
                 </DialogContentText>
             </DialogContent>
         </>
