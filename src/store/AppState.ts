@@ -17,40 +17,36 @@ class AppState {
         }
     }
 
-    /* App settings
-     *
-     * There you can manipulate on app.
-     *
-     */
+    // App settings
     private readonly DEMO_MODE: boolean                    = false;
-    private readonly privacyLink: string                   = "https://gazoptika.ru/upload/for-patient/Soglasie_na_obrabotku.pdf";
+    private readonly privacyLink: string                   = "https://gazoptika.ru/upload/for-patient/polozhenie_ob_obrabotke_pers_dannih_GCKZ.pdf";
     private readonly daysCountSchedule: number             = 14; // Дней выгрузки расписания
-    private readonly apiUrl: string                        = 'https://appointment.dzmed.ru/api/medical/'; // Адрес серера
+    private readonly apiUrl: string                        = 'http://localhost:8000/api/medical/'; // Адрес серера
 
     // Список названий и uid клиник для отображения, будут отображаться только указанные клиники.
     private readonly clinicsComparison: Array<string>      = [
-                                                                    "21e7d16c-05a2-11ec-1686-2cfda13451df"
+                                                                "21e7d16c-05a2-11ec-1686-2cfda13451df"
                                                              ];
 
-    readonly clinicsUidNegativeComparison: Array<string>      = [
+    readonly clinicsUidNegativeComparison: Array<string>   = [
 
-    ];
+                                                             ];
 
     // Сопоставление клиник и ссылок на условия конф. информации.
     private readonly privacyLinkComparison: privacyLinkComparison = {
-                                                                '21e7d16c-05a2-11ec-1686-2cfda13451df': 'https://dzmed.ru/soglasie152'
+                                                                '21e7d16c-05a2-11ec-1686-2cfda13451df': 'https://dzmed.ru/confidential'
                                                              }
     // Google captcha
     private readonly useGoogleCaptcha: boolean             = false;
     private readonly GoogleCaptchaSiteToken: string        = '';
 
     // Appointment buttons
-    private readonly useFloatButton: boolean               = true; // Добавляет плавающую кнопку.
+    private readonly useFloatButton: boolean               = false; // Добавляет плавающую кнопку.
 
 
     // App style
-    private readonly alwaysOpen: boolean                   = false; // Делает окно записи всегда развернутым.
-    public readonly primaryColor: string                   = '#1976d2';
+    private readonly alwaysOpen: boolean                   = true; // Делает окно записи всегда развернутым.
+    public readonly primaryColor: string                   = '#f5d716';
     public readonly secondaryColor: string                 = '#2280ea';
     public readonly primaryTextColor: string               = '#0A0A0A';
     public readonly secondaryTextColor: string             = '#2f2f2f';

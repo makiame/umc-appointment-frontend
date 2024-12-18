@@ -289,9 +289,8 @@ class OneCDataState {
                 if (this.data.nomenclature[uid].parent) {
                     parent = this.data.nomenclature[uid].parent;
                 }
-
-                let renderCondition = (appState.selected.specialty.name.toLowerCase()
-                    ===  (this.data.nomenclature[uid]?.parent).toLowerCase());
+                console.log(this.data.nomenclature[uid]);
+                let renderCondition = (appState.selected.specialty.name.toLowerCase() ===  this.data.nomenclature[uid]?.parent.toLowerCase());
 
                 if (appState.isSelectDoctorBeforeService){
                     const selectedEmployeeUid = appState.selected.employee.uid;
